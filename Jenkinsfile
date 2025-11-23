@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    parameters {
+        booleanParam(name: 'executeTests', defaultValue: true, description: 'Uncheck to skip tests')
+    }
     tools {
         maven 'Maven'
     }
@@ -10,11 +13,14 @@ pipeline {
         stage('Build') {
             steps {
                 echo "Building version ${NEW_VERSION}"
-                // Using 'sh' because you are on Ubuntu Linux
                 sh 'mvn -version'
             }
         }
         stage('Test') {
+            // This stage only runs if the checkbox is TRUE
+            when {
+                expression { params.executeTests == true }
+            }
             steps {
                 echo 'Testing Project...'
             }
